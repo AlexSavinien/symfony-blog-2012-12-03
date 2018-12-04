@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Annotations\Annotation\Target;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -31,6 +33,12 @@ class Category
      */
     private $name;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Article", mappedBy="category")
+     * @ORM\JoinColumn()
+     */
+    private $article;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -47,4 +55,29 @@ class Category
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return $this->getName();
+    }
+
+    /**
+     * @return Article
+     */
+    public function getArticle(): Collection
+    {
+        return $this->article;
+    }
+
+    /**
+     * @param Article $article
+     * @return Category
+     */
+    public function setArticle(Article $article): Category
+    {
+        $this->article = $article;
+        return $this;
+    }
+
+
 }

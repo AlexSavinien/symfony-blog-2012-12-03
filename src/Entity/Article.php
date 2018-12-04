@@ -19,11 +19,15 @@ class Article
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Le titre est obligatoire")
+     * @Assert\Length(max="255", maxMessage="Le titre ne peut pas excéder 255 caractères")
      */
     private $title;
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\NotBlank(message="Le contenu doit être rempli")
+     * @Assert\Length(max="800", maxMessage="Le contenu ne peut pas excéder {{ limit }} caractères")
      */
     private $content;
 
@@ -34,7 +38,8 @@ class Article
 
     /**
      * @var Category
-     * @ORM\ManyToOne(targetEntity="Category")
+     * @ORM\ManyToOne(targetEntity="Category", inversedBy="article")
+     * @Assert\NotBlank(message="Veuillez choisir une catégorie")
      * @ORM\JoinColumn(nullable=false)
      */
     private $category;
@@ -45,6 +50,17 @@ class Article
      * @ORM\JoinColumn(nullable=false)
      */
     private $author;
+
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     * @Assert\Image(
+     *     maxSize="1M",
+     *     maxSizeMessage="L'image ne peut pas dépasser {{ limit }}",
+     *     mimeTypesMessage="Le fichier doit être un format image")
+     */
+    private $image;
+
 
     public function getId(): ?int
     {
@@ -123,4 +139,22 @@ class Article
         return $this;
     }
 
+
+    /**
+     * @return mixed
+     */
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    /**
+     * @param mixed $image
+     * @return Article
+     */
+    public function setImage($image)
+    {
+        $this->image = $image;
+        return $this;
+    }
 }

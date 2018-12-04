@@ -4,21 +4,29 @@
     <h1>Gestion articles</h1>
 
     <p>
-        <a href="{{ path('app_admin_category_edit') }}">
-            Ajouter une catégorie
+        <a href="{{ path('app_admin_article_edit') }}">
+            Ajouter un article
         </a>
     </p>
 
     <table class="table table-striped">
         <tr>
             <th>ID</th>
-            <th>Nom</th>
-            <th width="350px"></th>
+            <th>Titre</th>
+            <th>Date de publication</th>
+            <th>Catégorie</th>
+            <th>Auteur</th>
+            <th>Contenu</th>
+            <th width="250px"></th>
         </tr>
         {% for article in articles %}
             <tr>
                 <td>{{ article.id }}</td>
+                <td>{{ article.title }}</td>
+                <td>{{ article.publicationDate|date('d-m-Y H:i') }}</td>
+                <td>{{ article.category }}</td>
                 <td>{{ article.author }}</td>
+                <td>{{ article.content }}</td>
                 <td>
                     <a href="{{ path('app_admin_article_edit', {id: article.id}) }}" class="btn btn-primary">
                         Modifier

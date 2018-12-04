@@ -123,13 +123,19 @@ class CategoryController extends AbstractController
     {
         $em = $this->getDoctrine()->getManager();
 
-        $em->remove($category);
-        $em->flush();
-
-        $this->addFlash(
-            'success',
-            'La catégorie a bien été supprimée'
-        );
+        if ($category->getArticle()->count() == 0)
+        {
+            $em->remove($category);
+            $em->flush();
+            $this->addFlash(
+                'success',
+                'La catégorie a bien été supprimée'
+            );
+        }
+        else
+        {
+            $this->addFlash('error', 'Vous ne pouvez pas supprimer une catégorie utilisé par un article');
+        }
 
         return $this->redirectToRoute('app_admin_category_index');
     }
