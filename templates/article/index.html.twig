@@ -3,4 +3,52 @@
 
 {% block body %}
     <h1>{{ article.title }}</h1>
+    <p>
+        Par {{ article.author }} le <em>{{ article.publicationDate|date('d/m/Y H:i') }}</em>
+        <br>Dans <strong>{{ article.category }}</strong>
+    </p>
+    <p>{{ article.content|nl2br }}</p>
+
+    <br><br><br>
+    
+    {% if article.image is not null %}
+        
+        <div class="container">
+            <div class="img-fluid text-center">
+                <img src="{{ asset('images/' ~ article.image) }}" style="max-width: 1000px">
+            </div>
+            <br><br><br><br>
+        </div>
+        
+    {% endif %}
+
+
+    {% if app.user is null %}
+        <p class="text-right">
+            Pour pouvoir écrire un commentaire veuillez <a href="{{ path('app_security_login') }}">vous connecter.</a>
+        </p>
+    {% else %}
+
+        {{ form_start(form) }}
+        {{ form_row(form.content) }}
+        <div class="text-right">
+            <button type="submit" class="btn btn-primary">
+                Enregistrer
+            </button>
+            <a class="btn btn-outline-secondary" href="{{ path('app_admin_article_index') }}">
+                Retour
+            </a>
+        </div>
+        {{ form_end(form) }}
+
+    {% endif %}
+
+    <div>
+    {% for comment in comments %}
+        <p>Par {{ comment.user }} le <em>{{ comment.publicationDate|date('d/m/Y H:i') }}</em> :</p>
+        <p>{{ comment.content|nl2br }}</p>
+        <hr>
+    {% endfor %}
+    </div>
+    
 {% endblock %}

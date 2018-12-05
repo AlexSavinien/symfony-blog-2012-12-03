@@ -17,6 +17,7 @@
             <th>Catégorie</th>
             <th>Auteur</th>
             <th>Contenu</th>
+            <th>Nb commentaires</th>
             <th width="250px"></th>
         </tr>
         {% for article in articles %}
@@ -26,7 +27,13 @@
                 <td>{{ article.publicationDate|date('d-m-Y H:i') }}</td>
                 <td>{{ article.category }}</td>
                 <td>{{ article.author }}</td>
-                <td>{{ article.content }}</td>
+                <td>
+                    {{ article.content|slice(0, 40) }}...
+                    <a href="" class="modalArticle"  data-id="{{ article.id }}">more
+
+                    </a>
+                </td>
+                <td>{{ article.comments.count }}</td>
                 <td>
                     <a href="{{ path('app_admin_article_edit', {id: article.id}) }}" class="btn btn-primary">
                         Modifier
@@ -39,4 +46,28 @@
         {% endfor %}
     </table>
 
+    <div class="modal" tabindex="-1" role="dialog" id="modal-content">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Modal body text goes here.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="{{ asset('js/modal-comment.js') }}"></script>
 {% endblock %}

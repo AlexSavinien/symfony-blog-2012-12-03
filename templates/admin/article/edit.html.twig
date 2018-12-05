@@ -28,4 +28,24 @@
 
     {# ferme la balise form #}
     {{ form_end(form) }}
+
+    <table class="table table-striped">
+        <tr>
+            <th>Commentaire</th>
+            <th width="150px"></th>
+        </tr>
+    {% for comment in comments %}
+        <tr>
+            <td>
+                <p>Par <em>{{ comment.user }}</em> le {{ comment.publicationDate|date('d/m/Y H:i') }}</p>
+                <p>{{ comment.content }}</p>
+            </td>
+            <td>
+                <a href="{{ path('app_admin_article_commentdelete', {id: comment.id}) }}" class="btn btn-danger">
+                    Supprimer
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
 {% endblock %}

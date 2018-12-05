@@ -9,12 +9,15 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Article;
+use App\Entity\Comment;
 use App\Form\ArticleType;
 use App\Form\CategoryType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -65,9 +68,14 @@ class ArticleController extends AbstractController
 
             $article = $em->find(Article::class, $id);
             $orinalImage = $article->getImage();
-            $article->setImage(
-                new File($this->getParameter('upload_dir').$orinalImage)
-            );
+
+            if (!is_null($orinalImage))
+            {
+                $article->setImage(
+                    new File($this->getParameter('upload_dir').$orinalImage)
+                );
+            }
+
             if (is_null($article))
             {
                 throw new NotFoundHttpException();
@@ -136,11 +144,15 @@ class ArticleController extends AbstractController
             }
         }
 
+
+        $comments = $article->getComments();
+
         return $this->render(
             'admin/article/edit.html.twig',
             [
                 'form' => $form->createView(),
-                'original_image' => $orinalImage
+                'original_image' => $orinalImage,
+                'comments'  => $comments
             ]
         );
     }
@@ -153,8 +165,61 @@ class ArticleController extends AbstractController
     public function delete(Article $article)
     {
         $em=$this->getDoctrine()->getManager();
+
+        // TODO: ajouter le remove sous condition de dépendance
+
         return $this->render(
             'admin/article/index.html.twig'
         );
+    }
+
+
+    /**
+     * @Route("/suppression-commentaire/{id}")
+     */
+    public function commentDelete(Comment $comment)
+    {
+        if (!is_null($comment))
+        {
+            $em=$this->getDoctrine()->getManager();
+            $em->remove($comment);
+            $em->flush();
+            $this->addFlash('success', 'Le commentaire a bien été supprimer');
+        }
+        else
+        {
+            $this->addFlash('error', 'Ce commentaire n\'existe pas');
+        }
+
+        // TODO: ajouter le remove sous condition de dépendance
+
+        return $this->redirectToRoute(
+            'app_admin_article_edit',
+            [
+                'id' => $comment->getArticle()->getId()
+            ]
+        );
+    }
+
+
+    /**
+     * @Route("/modalArticle/")
+     */
+    public function modalArticle(Request $request)
+    {
+        $repository = $this->getDoctrine()->getRepository(Article::class);
+        $article = $repository->find($request->request->get('articleId'));
+        $tab=[];
+        if ($request->isXmlHttpRequest())
+        {
+            $tab['content'] = $article->getContent();
+        }
+        else
+        {
+            echo "Ne reçois pas d'appel AJAX";
+        }
+
+
+        return new JsonResponse($tab);
     }
 }

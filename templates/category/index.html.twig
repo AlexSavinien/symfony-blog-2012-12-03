@@ -3,4 +3,16 @@
 
 {% block body %}
     <h1>{{ category }}</h1>
+    <h2>Derniers articles</h2>
+    {% for article in articles %}
+
+        <div>
+            <h2>{{ article.title }}</h2>
+            <p>{{ article.publicationDate|date('m/d/Y H:i') }}</p>
+            <p>{{ article.content|nl2br }}</p>
+            <p class="text-right">
+                <a href="{{ path('app_article_index', {id: article.id}) }}">More...</a>
+            </p>
+        </div>
+    {% endfor %}
 {% endblock %}
